@@ -14,7 +14,7 @@ formats = {0: "f", 1: "f", 2: "f", 3: "f", 4: "f", 5: "f",
 class Radio(threading.Thread):
 
 	def __init__(self, callback):
-		super().__init__(self)
+		super().__init__()
 		self.last_ping = 0
 		self.ADDRESS = None
 		self.daemon = True
@@ -37,7 +37,7 @@ class Radio(threading.Thread):
 
 		self.ADDRESS = socket.gethostbyname("affect.red")
 		self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		self.client.setblocking(0)
+		self.client.setblocking(False)
 		self.last_ping = 0
 		
 		

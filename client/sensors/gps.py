@@ -11,7 +11,7 @@ talkers = ("GGA", "VTG")
 class GPS_Poller(threading.Thread):
 
     def __init__(self, callback):
-        super().__init__(self)
+        super().__init__()
         self.daemon = True
         self.active = True
         self.callback = callback
