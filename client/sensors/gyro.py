@@ -42,7 +42,6 @@ class Sensor_Poller(threading.Thread):
 
         while self.active:
             try:
-
                 self.callback(*self.imu.read_heading_pitch_roll())
                 time.sleep(0.1)
 
@@ -58,11 +57,10 @@ class Sensor_Poller(threading.Thread):
 
 class Gyro:
 
-    heading = 0
-    pitch = 0
-    roll = 0
-
     def __init__(self, plane=None):
+        self.heading = 0
+        self.pitch = 0
+        self.roll = 0
         self.plane = plane
         self.poller = Sensor_Poller(self.callback)
         self.poller.start()

@@ -27,6 +27,7 @@ class Autopilot:
 		self.target_lon = 0
 		self.target_alt = 0
 		self.target_heading = 0
+		self.target_aileron_angle = 0
 
 		self.home_lat = 0
 		self.home_lon = 0
@@ -37,8 +38,7 @@ class Autopilot:
 		"""theoretically, once the plane reaches the target location it will float around it weirdly"""
 				
 		while self.enabled:
-			bearing = self.plane.gps.heading_to(latitude, longitude)
-			self.turn_to_heading(bearing)
+			self.turn_to_heading(self.plane.gps.heading_to(latitude, longitude))
 			
 			#if self.plane.gps.distance_to(latitude, longitude) < 10:
 				#self.circle()
@@ -47,7 +47,7 @@ class Autopilot:
 	def turn_to_heading(self, bearing):
 		#rotate servos until gyro matches 15 degrees
 		#rotation amount is proportional to size of angle between heading and bearing up to 15 degrees
-		current_angle = self.plane.gyro.orientation[1]		
+		target_roll_angle = self.plane.STANDARD_TURN_ANGLE
 		current_heading = self.plane.gyro.heading
 		
 		#will decrease as heading approaches bearing
@@ -56,16 +56,13 @@ class Autopilot:
 
 		if abs(current_heading-bearing) < 180:
 			target_angle *= -1
-		
-		
-		#self.aileron_angle += (current_angle-target_angle)/10
-		
-		#self.plane.ailerons.rotate(self.aileron_angle)
+			target_roll_angle *= -1
 
-		#need to determine an aileron angle that will be sufficient to turn the plane to the target heading in the shortest time
+		#need to determine an aileron angle that will be sufficient to turn the plane to the target heading without going crazy
 		#the angle has to be proportional to the difference between the current heading and the target heading
 
-		target_aileron_angle = target_angle/15
+		self.target_aileron_angle += (target_roll_angle-self.plane.gyro.roll)/10
+		self.plane.ailerons.rotate(self.target_aileron_angle)
 		
 	
 	def circle(self, radius, latitude, longitude):

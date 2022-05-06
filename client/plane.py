@@ -13,6 +13,8 @@ it beings everything together
 
 class Plane:
 
+    STANDARD_TURN_ANGLE = 15
+
     def __init__(self):
 
         self.radio = client.Radio(self.radio_callback)
