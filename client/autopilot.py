@@ -32,15 +32,16 @@ class Autopilot:
 		self.home_lon = 0
 		self.home_alt = 0
 		
-		
+
 	def fly_to(self, latitude, longitude):
+		"""theoretically, once the plane reaches the target location it will float around it weirdly"""
 				
 		while self.enabled:
 			bearing = self.plane.gps.heading_to(latitude, longitude)
 			self.turn_to_heading(bearing)
 			
-			if self.plane.gps.distance_to(latitude, longitude) < 10:
-				self.circle()
+			#if self.plane.gps.distance_to(latitude, longitude) < 10:
+				#self.circle()
 		
 	
 	def turn_to_heading(self, bearing):
@@ -62,11 +63,14 @@ class Autopilot:
 		self.plane.ailerons.rotate(self.aileron_angle)
 		
 	
-	def circle(self, radius=0, latitude=None, longitude=None):
-		
+	def circle(self, radius, latitude, longitude):
+		"""Fly in a circle around the latitude and longitude with a radius of radius"""
+
+		#not really a circle but it should stay in the general area of the circle
 		while self.enabled:
-			break
-			#radius = self.plane.gps.distance_to(latitude, longitude)
+			bearing = self.plane.gps.heading_to(latitude, longitude)
+			self.turn_to_heading(bearing)
+
 
 		
 
@@ -75,8 +79,8 @@ class Autopilot:
 		pass
 	
 	def return_to_home(self):
-		self.fly_to(self.home)
-		self.circle()
+		self.fly_to(*self.home)
+		#self.circle()
 		
 		
 	def set_home(self):
