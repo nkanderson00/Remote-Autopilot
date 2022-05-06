@@ -20,7 +20,7 @@ class PWM:
 		self.reverse = True
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(pinout[input_id], GPIO.OUT)
-		self.pwm = GPIO.PWM(pin, 50)
+		self.pwm = GPIO.PWM(pinout[input_id], 50)
 		
 		if input_id != 0:
 			self.pwm.start(self.SERVO_MID)
@@ -39,7 +39,7 @@ class PWM:
 class Servo(PWM):
 	
 	def __init__(self, input_id):
-		super().__init__(self, input_id)
+		super().__init__(input_id)
 		self._trim = self.SERVO_MID
 		
 	@property
@@ -52,10 +52,10 @@ class Servo(PWM):
 		self._trim = max(min(self._trim, self.SERVO_MAX), self.SERVO_MIN)
 
 
-class Throttle(Servo)
+class Throttle(Servo):
 
 	def __init__(self, input_id):
-		super().__init__(self, input_id)
+		super().__init__(input_id)
 		self.SERVO_MAX = 10
 		self.SERVO_MIN = 5
 		

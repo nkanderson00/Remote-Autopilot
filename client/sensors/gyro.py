@@ -62,9 +62,9 @@ class Gyro:
     pitch = 0
     roll = 0
 
-    def __init__(self, plane):
+    def __init__(self, plane=None):
         self.plane = plane
-        self.poller = Sensor_Poller()
+        self.poller = Sensor_Poller(self.callback)
         self.poller.start()
 
     def __repr__(self):

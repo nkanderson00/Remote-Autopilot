@@ -58,9 +58,14 @@ class Autopilot:
 			target_angle *= -1
 		
 		
-		self.aileron_angle += (current_angle-target_angle)/10
+		#self.aileron_angle += (current_angle-target_angle)/10
 		
-		self.plane.ailerons.rotate(self.aileron_angle)
+		#self.plane.ailerons.rotate(self.aileron_angle)
+
+		#need to determine an aileron angle that will be sufficient to turn the plane to the target heading in the shortest time
+		#the angle has to be proportional to the difference between the current heading and the target heading
+
+		target_aileron_angle = target_angle/15
 		
 	
 	def circle(self, radius, latitude, longitude):
