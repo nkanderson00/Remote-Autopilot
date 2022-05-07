@@ -7,11 +7,11 @@ import threading
 #0-5 joystick inputs
 #6-11 lat-long, alt, num_sats, gps_qual, true_track, sog_kts
 #12-16 heading, pitch, roll, pressure, voltage
-#17 AP?
+#17-19 AP?, heading_locked?, altitude_locked?
 formats = {0: "f", 1: "f", 2: "f", 3: "f", 4: "f", 5: "f",
 		   6: "ff", 7: "f", 8: "B", 9: "B", 10: "f", 11: "f",
 		   12: "f", 13: "f", 14: "f", 15: "f", 16: "f",
-		   17: "B"}
+		   17: "B", 18: "B", 19: "B"}
 		
 class Radio(threading.Thread):
 

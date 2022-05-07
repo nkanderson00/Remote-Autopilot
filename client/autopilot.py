@@ -2,6 +2,8 @@ import warnings
 
 class Autopilot:
 
+	WAYPOINT_RADIUS_IGNORE = 50 #feet
+
 	def __init__(self, plane):
 
 		self.enabled = False
@@ -10,13 +12,13 @@ class Autopilot:
 		self.home = None
 		self.set_home()
 
-		self.heading_lock = False
-		self.heading_mode = 0 #0 is MAINTAIN, 1 is WAYPOINT
-		self.target_heading = 0
-		self.target_lat = 0
-		self.target_lon = 0
-		self.altitude_lock = False
-		self.target_altitude = 400
+		self._heading_lock = False
+		self._heading_mode = 0 #0 is MAINTAIN, 1 is WAYPOINT
+		self._target_heading = 0
+		self._target_lat = 0
+		self._target_lon = 0
+		self._altitude_lock = False
+		self._target_altitude = 400
 
 		self.aileron_angle = 0
 		self.elevator_angle = 0
@@ -46,14 +48,15 @@ class Autopilot:
 				
 		while self.enabled:
 
-			if self.heading_lock:
-				match self.heading_mode:
+			if self._heading_lock:
+				match self._heading_mode:
 					case 0:
-						self.turn_to_heading(self.target_heading)
+						self.turn_to_heading(self._target_heading)
 					case 1:
-						self.turn_to_heading(self.plane.gps.get_heading_to(self.target_lat, self.target_lon))
+						if self.plane.gps.get_distance_to(self._target_lat, self._target_lon) > self.WAYPOINT_RADIUS_IGNORE:
+							self.turn_to_heading(self.plane.gps.get_heading_to(self._target_lat, self._target_lon))
 
-			if self.altitude_lock and self.target_altitude:
+			if self._altitude_lock and self._target_altitude:
 				self.approach_altitude()
 			
 			#if self.plane.gps.distance_to(latitude, longitude) < 10:
@@ -62,39 +65,47 @@ class Autopilot:
 	def lock_heading(self, mode: int = 0):
 		if mode not in range(2):
 			warnings.warn("Invalid heading mode. Value must be 0 or 1.", RuntimeWarning)
-		self.heading_lock = True
-		self.heading_mode = mode
-		self.target_heading = self.plane.gyro.heading
+		self._heading_lock = True
+		self._heading_mode = mode
+		self._target_heading = self.plane.gyro.heading
+		self.plane.to_radio({18:(1,)})
+		if not self.enabled:
+			self.enable()
 
 	def unlock_heading(self):
-		self.heading_lock = False
-		self.heading_mode = 0
+		self._heading_lock = False
+		self._heading_mode = 0
+		self.plane.to_radio({18: (0,)})
 
 	def set_heading(self, heading: int):
 		if heading < 0 or heading > 360:
 			warnings.warn("Invalid heading. Value must be between 0 and 360.", RuntimeWarning)
 			heading = min(max(heading, 0), 360)
-		self.target_heading = heading
+		self._target_heading = heading
 
 	def set_waypoint(self, latitude, longitude, altitude = None):
-		self.target_lat = latitude
-		self.target_lon = longitude
+		self._target_lat = latitude
+		self._target_lon = longitude
 		self.altitude = self.plane.gps.altitude
 		if altitude is not None:
 			self.set_altitude(altitude)
 
 	def lock_altitude(self):
-		self.altitude_lock = True
-		self.target_altitude = self.plane.gps.altitude
+		self._altitude_lock = True
+		self._target_altitude = self.plane.gps.altitude
+		self.plane.to_radio({19: (1,)})
+		if not self.enabled:
+			self.enable()
 
 	def unlock_altitude(self):
-		self.altitude_lock = False
+		self._altitude_lock = False
+		self.plane.to_radio({19: (0,)})
 
 	def set_altitude(self, altitude: int):
 		if altitude < 0:
 			warnings.warn("Invalid altitude. Value must be greater than 0.", RuntimeWarning)
 		else:
-			self.target_altitude = altitude
+			self._target_altitude = altitude
 	
 	def turn_to_heading(self, bearing):
 		target_roll_angle = self.plane.STANDARD_TURN_ANGLE
@@ -123,39 +134,26 @@ class Autopilot:
 		"""
 
 		#pressure_altitude = self.plane.meteorology.get_pressure_altitude()
-		if abs(self.plane.gps.altitude - self.target_altitude) > 10:
-			self.target_elevator_angle += (self.target_altitude-self.plane.gps.altitude)
+		if abs(self.plane.gps.altitude - self._target_altitude) > 10:
+			self.target_elevator_angle += (self._target_altitude-self.plane.gps.altitude)
 			self.plane.elevators.rotate(self.target_elevator_angle)
-		
-	
-	def circle(self, radius, latitude, longitude):
-		"""Fly in a circle around the latitude and longitude with a radius of radius"""
-
-		#not really a circle but it should stay in the general area of the circle
-		while self.enabled:
-			bearing = self.plane.gps.get_heading_to(latitude, longitude)
-			self.turn_to_heading(bearing)
-
-
-		
 
 	#land the plane using ultrasonic sensor and gps
 	def land(self):
 		pass
 	
 	def return_to_home(self):
+		self.lock_heading(mode = 1)
 		self.set_heading(self.plane.gps.get_heading_to(*self.home))
 		self.mainloop()
-		#self.circle()
-		
 		
 	def set_home(self):
 		self.home = self.plane.gps.location
 
 	def disable(self):
 		self.enabled = False
-		self.plane.to_radio({17: 0})
+		self.plane.to_radio({17: (0,)})
 
 	def enable(self):
 		self.enabled = True
-		self.plane.to_radio({17: 1})
+		self.plane.to_radio({17: (1,)})

@@ -76,14 +76,14 @@ class GPS:
     def get_location(self):
         return self.latitude, self.longitude
 
-    def distance_to(self, latitude, longitude):
-        #using haversine formula in meters
+    def get_distance_to(self, latitude, longitude):
+        #using haversine formula in feet
         R = 6371000
         dlat = radians(latitude - self.latitude)
         dlon = radians(longitude - self.longitude)
         a = sin(dlat / 2) * sin(dlat / 2) + cos(self.latitude) * cos(latitude) * sin(dlon / 2) * sin(dlon / 2)
         c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        d = R * c
+        d = R * c * 3.28084
         return d
 
     def nmea_callback(self, sentence_type, nmea):
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     time.sleep(10)
     gps.stop()
     print(gps)
-    print(gps.distance_to(0, 0))
+    print(gps.get_distance_to(0, 0))
     print(gps.get_heading_to(0, 0, 0))
     print(gps.get_location())
     print(gps.speed)
