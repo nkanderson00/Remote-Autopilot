@@ -2,7 +2,7 @@ from icm20948 import ICM20948
 import time
 from math import *
 import tilt_compensator
-from ..telemetry import packet, client
+from ..telemetry import packet, radio
 import threading
 
 class Sensor(ICM20948):
@@ -73,9 +73,8 @@ class Gyro:
         self.pitch = pitch
         self.roll = roll
         print(round(heading), round(pitch), round(roll), "\t", end="\r")
-        data_encoded = {12: (heading,), 13: (pitch,), 14: (roll,)}
-        data_encoded = packet.encode(data_encoded, client.formats)
-        self.plane.to_radio(data_encoded)
+        data = {12: (heading,), 13: (pitch,), 14: (roll,)}
+        self.plane.to_radio(data)
 
 
 if __name__ == "__main__":

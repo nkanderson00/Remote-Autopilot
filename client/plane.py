@@ -2,7 +2,7 @@
 from autopilot import Autopilot
 from servo import servo
 import sensors
-from telemetry import client
+from telemetry import radio
 
 
 """
@@ -17,7 +17,7 @@ class Plane:
 
     def __init__(self):
 
-        self.radio = client.Radio(self.radio_callback)
+        self.radio = radio.Radio(self.radio_callback)
         self.radio.start()
 
         self.gps = sensors.gps.GPS(self)
@@ -37,16 +37,21 @@ class Plane:
         print("SERVER RESPONSE:", data)
 
         for k, v in data.items():
-            if k <= 3:
+
+            if k == 0:
+                self.throttle.rotate(v[0])
+
+            elif k <= 3:
+                self.autopilot.disable()
                 self.servo_ids[k].rotate(v[0])
 
-            if k == 4:
+            elif k == 4:
                 self.ailerons.trim(v[0])
 
             elif k == 5:
                 self.elevator.trim(v[0])
 
-    def to_radio(self, data: bytes):
+    def to_radio(self, data: dict):
         self.radio.send(data)
 
     def run(self):

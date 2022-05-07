@@ -4,13 +4,11 @@ terminator = 255
 
 
 def decode(data, formats:dict):
-	
-	byte = 0
+
 	prefix_index = 0
 	fmt = "B"
 	values = {}
 	prefixes = []
-	byte_values = []
 	
 	while prefix_index < len(data):
 		byte = data[prefix_index]
@@ -54,6 +52,9 @@ def encode(data:dict, formats:dict):
 	except: data = b''
 	
 	return data
+
+if __name__ == "__main__":
+	print(encode({}, {}))
 		
 	
 #as you can refer to line 4, you can see that key 0 can be used

@@ -2,7 +2,7 @@ import serial
 import pynmea2
 import threading
 import time
-from ..telemetry import packet, client
+from ..telemetry import packet, radio
 from math import *
 
 talkers = ("GGA", "VTG")
@@ -89,20 +89,18 @@ class GPS:
             self.altitude = nmea.altitude
             self.num_sats = nmea.num_sats
             self.gps_qual = nmea.gps_qual
-            data_encoded = {6: (nmea.lat, nmea.lon), 7: (nmea.altitude,),
+            data = {6: (nmea.lat, nmea.lon), 7: (nmea.altitude,),
                             8: (nmea.num_sats,), 9: (nmea.gps_qual,)}
-            data_encoded = packet.encode(data_encoded, client.formats)
 
         elif sentence_type == "VTG":
             self.true_track = nmea.true_track
             self.speed = nmea.spd_over_grnd_kts
-            data_encoded = {10: (nmea.true_track,), 11: (float(nmea.spd_over_grnd_kts),)}
-            data_encoded = packet.encode(data_encoded, client.formats)
+            data = {10: (nmea.true_track,), 11: (float(nmea.spd_over_grnd_kts),)}
 
         else:
             return
 
-        self.plane.to_radio(data_encoded)
+        self.plane.to_radio(data)
 
     def stop(self):
         self.poller.stop()

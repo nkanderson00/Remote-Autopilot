@@ -39,47 +39,48 @@ class LPS22HB(object):
 		self._write_byte(LPS_CTRL_REG1 ,0x02)		#Low-pass filter disabled , output registers not updated until MSB and LSB have been read , Enable Block Data Update , Set Output Data Rate to 0 
 	
 	def LPS22HB_RESET(self):
-		Buf = self._read_u16(LPS_CTRL_REG2)
-		Buf |= 0x04										 
-		self._write_byte(LPS_CTRL_REG2,Buf)			   #SWRESET Set 1
+		buf = self._read_u16(LPS_CTRL_REG2)
+		buf |= 0x04
+		self._write_byte(LPS_CTRL_REG2,buf)			   #SWRESET Set 1
 		
-		while Buf:
-			Buf = self._read_u16(LPS_CTRL_REG2)
-			Buf &= 0x04
+		while buf:
+			buf = self._read_u16(LPS_CTRL_REG2)
+			buf &= 0x04
 	
 	def LPS22HB_START_ONESHOT(self):
-		Buf = self._read_u16(LPS_CTRL_REG2)
-		Buf |= 0x01										 #ONE_SHOT Set 1
-		self._write_byte(LPS_CTRL_REG2,Buf)
+		buf = self._read_u16(LPS_CTRL_REG2)
+		buf |= 0x01										 #ONE_SHOT Set 1
+		self._write_byte(LPS_CTRL_REG2,buf)
 	
 	def _read_byte(self,cmd):
 		return self._bus.read_byte_data(self._address,cmd)
 	
 	def _read_u16(self,cmd):
-		LSB = self._bus.read_byte_data(self._address,cmd)
-		MSB = self._bus.read_byte_data(self._address,cmd+1)
-		return (MSB	<< 8) + LSB
+		lsb = self._bus.read_byte_data(self._address,cmd)
+		msb = self._bus.read_byte_data(self._address,cmd+1)
+		return (msb	<< 8) + lsb
 	
 	def _write_byte(self,cmd,val):
 		self._bus.write_byte_data(self._address,cmd,val)
 
-	def read_pressure_termperature_data(self):
+	def read_pressure_temperature_data(self):
 		
-		u8Buf = [0,0,0]
+		u8_buf = [0,0,0]
 		self.LPS22HB_START_ONESHOT()
+		press_data, temp_data = 0, 0
 		
 		if (self._read_byte(LPS_STATUS)&0x01) == 0x01:  # a new pressure data is generated
-			u8Buf[0] = self._read_byte(LPS_PRESS_OUT_XL)
-			u8Buf[1] = self._read_byte(LPS_PRESS_OUT_L)
-			u8Buf[2] = self._read_byte(LPS_PRESS_OUT_H)
-			PRESS_DATA = ((u8Buf[2]<<16)+(u8Buf[1]<<8)+u8Buf[0])/4096.0
+			u8_buf[0] = self._read_byte(LPS_PRESS_OUT_XL)
+			u8_buf[1] = self._read_byte(LPS_PRESS_OUT_L)
+			u8_buf[2] = self._read_byte(LPS_PRESS_OUT_H)
+			press_data = ((u8_buf[2]<<16)+(u8_buf[1]<<8)+u8_buf[0])/4096.0
 		
 		if (lps22hb._read_byte(LPS_STATUS)&0x02) == 0x02:   # a new temperature data is generated
-			u8Buf[0] = self._read_byte(LPS_TEMP_OUT_L)
-			u8Buf[1] = self._read_byte(LPS_TEMP_OUT_H)
-			TEMP_DATA = ((u8Buf[1]<<8)+u8Buf[0])/100.0
+			u8_buf[0] = self._read_byte(LPS_TEMP_OUT_L)
+			u8_buf[1] = self._read_byte(LPS_TEMP_OUT_H)
+			temp_data = ((u8_buf[1]<<8)+u8_buf[0])/100.0
 			
-		return PRESS_DATA, TEMP_DATA
+		return press_data, temp_data
 
 
 if __name__ == '__main__':
@@ -88,5 +89,5 @@ if __name__ == '__main__':
 	
 	while True:
 		time.sleep(0.1)
-		pressure, temperature = lps22hb.read_pressure_termperature_data()
+		pressure, temperature = lps22hb.read_pressure_temperature_data()
 		print("Pressure = %6.2f hPa , Temperature = %6.2f °C"%(pressure,temperature), end="\r")

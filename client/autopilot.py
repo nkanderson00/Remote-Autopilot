@@ -87,3 +87,11 @@ class Autopilot:
 		
 	def set_home(self):
 		self.home = self.plane.gps.location
+
+	def disable(self):
+		self.enabled = False
+		self.plane.to_radio({17: 0})
+
+	def enable(self):
+		self.enabled = True
+		self.plane.to_radio({17: 1})
