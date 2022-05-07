@@ -313,9 +313,15 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16</height>
+         </size>
+        </property>
         <property name="font">
          <font>
-          <pointsize>10</pointsize>
+          <pointsize>12</pointsize>
          </font>
         </property>
         <property name="text">
@@ -484,6 +490,13 @@
            </layout>
           </widget>
          </item>
+         <item>
+          <widget class="QToolButton" name="ServoSettingsButton">
+           <property name="text">
+            <string>Settings</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -504,41 +517,15 @@
         <property name="title">
          <string>Autopilot</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_8">
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item>
-            <widget class="QCheckBox" name="checkBox_2">
-             <property name="text">
-              <string>Enabled</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QCheckBox" name="checkBox_4">
-               <property name="text">
-                <string>Altitude</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioButton_3">
-               <property name="text">
-                <string>Heading</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="radioButton_4">
-               <property name="text">
-                <string>Waypoint</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
@@ -569,36 +556,48 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <widget class="QLabel" name="label_3">
+            <widget class="QCheckBox" name="checkBox">
              <property name="text">
-              <string>Altitude target</string>
+              <string>Altitude Mode</string>
              </property>
             </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_10">
              <item>
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Altitude target (ft)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QSpinBox" name="spinBox">
                <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>0</width>
-                 <height>37</height>
+                 <width>50</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>125</width>
+                 <height>35</height>
                 </size>
                </property>
                <property name="font">
                 <font>
-                 <family>DejaVu Sans</family>
-                 <pointsize>20</pointsize>
+                 <pointsize>14</pointsize>
                 </font>
                </property>
                <property name="minimum">
-                <number>400</number>
+                <number>10</number>
                </property>
                <property name="maximum">
                 <number>5000</number>
@@ -613,20 +612,32 @@
            <item>
             <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>Alt. approach rate</string>
+              <string>Altitude approach rate</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QSlider" name="horizontalSlider_2">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimum">
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>20</number>
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
              </property>
              <property name="value">
-              <number>10</number>
+              <number>50</number>
+             </property>
+             <property name="sliderPosition">
+              <number>50</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -648,11 +659,29 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>Heading target</string>
-             </property>
-            </widget>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QRadioButton" name="radioButton_3">
+               <property name="text">
+                <string>Vector Mode</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="radioButton_5">
+               <property name="text">
+                <string>Heading Mode</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -673,8 +702,17 @@
                <property name="maximum">
                 <number>360</number>
                </property>
+               <property name="sliderPosition">
+                <number>0</number>
+               </property>
                <property name="tracking">
                 <bool>true</bool>
+               </property>
+               <property name="invertedAppearance">
+                <bool>true</bool>
+               </property>
+               <property name="invertedControls">
+                <bool>false</bool>
                </property>
                <property name="wrapping">
                 <bool>true</bool>
@@ -717,7 +755,7 @@
            <item>
             <widget class="QLabel" name="label_5">
              <property name="text">
-              <string>Hdg. approach rate</string>
+              <string>Heading approach rate</string>
              </property>
             </widget>
            </item>
@@ -727,10 +765,13 @@
               <number>1</number>
              </property>
              <property name="maximum">
-              <number>20</number>
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
              </property>
              <property name="value">
-              <number>10</number>
+              <number>50</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -740,26 +781,6 @@
           </layout>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QGroupBox" name="groupBox_4">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>218</height>
-         </size>
-        </property>
-        <property name="title">
-         <string>Weather</string>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_7"/>
        </widget>
       </item>
      </layout>

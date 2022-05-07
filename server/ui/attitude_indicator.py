@@ -63,8 +63,8 @@ class AttitudeIndicator(QWidget):
         self.ff_m = 0
         self.ff_v = 0
 
-        self.setMinimumSize(400, 300)
-        # self.setMaximumSize(240,240)
+        self.setMinimumSize(200, 200)
+        self.setMaximumSize(200,200)
 
         # Update self at 30hz
         self.updateTimer = QTimer(self)
