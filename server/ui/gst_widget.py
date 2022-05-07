@@ -36,10 +36,8 @@ class VideoWidget(QWidget):
 	def on_sync_message(self, bus, msg):
 		message_name = msg.get_structure().get_name()
 		if message_name == 'prepare-window-handle':
-			win_id = self.windowId
-			assert win_id
-			imagesink = msg.src
-			imagesink.set_window_handle(win_id)
+			assert self.windowId
+			msg.src.set_window_handle(self.windowId)
 
 	def start_pipeline(self):
 		self.pipeline.set_state(Gst.State.PLAYING)

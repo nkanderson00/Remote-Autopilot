@@ -260,7 +260,7 @@ if __name__ == "__main__":
             self.wid.setPitch(pitch - 90)
 
         def updateRoll(self, roll):
-            self.wid.setRoll((roll / 10.0) - 180.0)
+            self.wid.setRoll(roll - 180.0)
 
         def updateTarget(self, target):
             self.wid.setHover(target)
@@ -271,10 +271,10 @@ if __name__ == "__main__":
         def initUI(self):
             vbox = QVBoxLayout()
 
-            sld = QSlider(Qt.Horizontal, self)
-            sld.setFocusPolicy(Qt.NoFocus)
-            sld.setRange(0, 3600)
-            sld.setValue(1800)
+            sld = QSlider(Qt.Orientation.Horizontal, self)
+            sld.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+            sld.setRange(0, 360)
+            sld.setValue(180)
             vbox.addWidget(sld)
 
             self.wid = AttitudeIndicator()
@@ -285,21 +285,21 @@ if __name__ == "__main__":
             hbox = QHBoxLayout()
             hbox.addLayout(vbox)
 
-            sldPitch = QSlider(Qt.Vertical, self)
-            sldPitch.setFocusPolicy(Qt.NoFocus)
+            sldPitch = QSlider(Qt.Orientation.Vertical, self)
+            sldPitch.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             sldPitch.setRange(0, 180)
             sldPitch.setValue(90)
             sldPitch.valueChanged[int].connect(self.updatePitch)
             hbox.addWidget(sldPitch)
 
-            sldASL = QSlider(Qt.Vertical, self)
-            sldASL.setFocusPolicy(Qt.NoFocus)
+            sldASL = QSlider(Qt.Orientation.Vertical, self)
+            sldASL.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             sldASL.setRange(-200, 200)
             sldASL.setValue(0)
             sldASL.valueChanged[int].connect(self.updateBaro)
 
-            sldT = QSlider(Qt.Vertical, self)
-            sldT.setFocusPolicy(Qt.NoFocus)
+            sldT = QSlider(Qt.Orientation.Vertical, self)
+            sldT.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             sldT.setRange(-200, 200)
             sldT.setValue(0)
             sldT.valueChanged[int].connect(self.updateTarget)
@@ -312,10 +312,6 @@ if __name__ == "__main__":
             self.setGeometry(50, 50, 510, 510)
             self.setWindowTitle('Attitude Indicator')
             self.show()
-
-        def changeValue(self, value):
-            self.c.updateBW.emit(value)
-            self.wid.repaint()
 
 
     def main():
