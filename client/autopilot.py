@@ -26,7 +26,9 @@ class Autopilot:
 		self.altitude = 0
 		self.pitch = 0
 		self.roll = 0
-		self.speed = 0
+		self.ground_speed = 0
+		self.climb_rate = 0
+		self._climb_angles = {}
 		self.distance = 0
 		self.distance_to_target = 0
 		self.distance_to_home = 0
@@ -51,8 +53,8 @@ class Autopilot:
 					case 1:
 						self.turn_to_heading(self.plane.gps.get_heading_to(self.target_lat, self.target_lon))
 
-			if self.altitude_lock:
-				self.approach_altitude(self.target_altitude)
+			if self.altitude_lock and self.target_altitude:
+				self.approach_altitude()
 			
 			#if self.plane.gps.distance_to(latitude, longitude) < 10:
 				#self.circle()
@@ -110,15 +112,20 @@ class Autopilot:
 		self.target_aileron_angle += (target_roll_angle-self.plane.gyro.roll)/10 #10 is the smoothness. arbitrary.
 		self.plane.ailerons.rotate(self.target_aileron_angle)
 
-	def approach_altitude(self, altitude):
+	def approach_altitude(self):
 		"""
 		need to determine an elevator angle that will not cause a stall if flying up.
 		the optimal elevator angle will depend on the maximum climb rate.
 		climb rate can be determined by the change in altitude over time.
 		air pressure is a good indicator of climb rate.
 
-		Find the
+		Find the elevator angle where the rate of change of pressure is maximum
 		"""
+
+		#pressure_altitude = self.plane.meteorology.get_pressure_altitude()
+		if abs(self.plane.gps.altitude - self.target_altitude) > 10:
+			self.target_elevator_angle += (self.target_altitude-self.plane.gps.altitude)
+			self.plane.elevators.rotate(self.target_elevator_angle)
 		
 	
 	def circle(self, radius, latitude, longitude):
@@ -138,7 +145,7 @@ class Autopilot:
 	
 	def return_to_home(self):
 		self.set_heading(self.plane.gps.get_heading_to(*self.home))
-		self.mainloop(*self.home)
+		self.mainloop()
 		#self.circle()
 		
 		

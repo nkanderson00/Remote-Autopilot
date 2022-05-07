@@ -22,6 +22,7 @@ class Plane:
 
         self.gps = sensors.gps.GPS(self)
         self.gyro = sensors.gyro.Gyro(self)
+        self.meteorology = sensors.meteorology.Meteorology(self)
         self.autopilot = Autopilot(self)
 
         self.throttle = servo.Throttle(0)

@@ -1,9 +1,12 @@
 from icm20948 import ICM20948
 import time
-from math import *
 import tilt_compensator
-from ..telemetry import packet, radio
 import threading
+
+"""
+Gyro data will need to be polled constantly so that the remote
+can access the latest data.
+"""
 
 class Sensor(ICM20948):
 

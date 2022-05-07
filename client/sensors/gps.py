@@ -2,8 +2,13 @@ import serial
 import pynmea2
 import threading
 import time
-from ..telemetry import packet, radio
 from math import *
+
+"""
+There is a small delay between each reading
+of the GPS due to normal factors so it is not
+looping too fast.
+"""
 
 talkers = ("GGA", "VTG")
 
@@ -48,6 +53,7 @@ class GPS:
         self.latitude = 0
         self.longitude = 0
         self.altitude = 0
+        self.initial_altitude = 0
         self.num_sats = 0
         self.gps_qual = 0
         self.true_track = 0
@@ -86,7 +92,10 @@ class GPS:
         if sentence_type == "GGA":
             self.latitude = nmea.lat
             self.longitude = nmea.lon
-            self.altitude = nmea.altitude
+            #convert meters to feet
+            self.altitude = nmea.altitude * 3.28084
+            if not self.initial_altitude:
+                self.initial_altitude = self.altitude
             self.num_sats = nmea.num_sats
             self.gps_qual = nmea.gps_qual
             data = {6: (nmea.lat, nmea.lon), 7: (nmea.altitude,),
@@ -113,7 +122,7 @@ if __name__ == "__main__":
     gps.stop()
     print(gps)
     print(gps.distance_to(0, 0))
-    print(gps.heading_to(0, 0, 0))
+    print(gps.get_heading_to(0, 0, 0))
     print(gps.get_location())
     print(gps.speed)
     print(gps.true_track)
