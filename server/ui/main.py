@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import *
 import attitude_indicator
 import compass
 import gst_widget
+import servosettings
 from PIL import Image
 
 headers = {"X-API-Key": "281c928ea60d404ab7d30be698"}
@@ -88,6 +89,7 @@ class Window(QMainWindow):
         self.cam_feed = None
         uic.loadUi('design.ui', self)
         self.setWindowTitle("Flight Control")
+        self.servo_settings_dialog = servosettings.Dialog()
         self.configure()
 
     def closeEvent(self, event):
@@ -144,6 +146,8 @@ class Window(QMainWindow):
         self.functionLayout.addWidget(attitude_indicator.AttitudeIndicator())
 
         self.metar.setText(metar)
+
+        self.ServoSettingsButton.clicked.connect(self.servo_settings_dialog.show)
 
 
 if __name__ == '__main__':
