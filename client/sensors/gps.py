@@ -61,7 +61,7 @@ class GPS:
     def __repr__(self):
         return f"Position <{self.latitude}, {self.longitude}>, Altitude: {self.altitude}, Speed: {self.speed}"
 
-    def heading_to(self, latitude, longitude, altitude):
+    def get_heading_to(self, latitude, longitude, altitude):
         x = cos(latitude) * sin(self.longitude - longitude)
         y = cos(self.latitude) * sin(latitude) - sin(self.latitude) * cos(latitude) * cos(self.longitude - longitude)
         bearing = degrees(atan2(x, y))
