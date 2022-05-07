@@ -4,10 +4,10 @@ Created on Aug 19, 2014
 @author: bitcraze
 '''
 import sys
-from PyQt5 import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt6 import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 
 class CompassWidget(QWidget):
 
@@ -30,9 +30,9 @@ class CompassWidget(QWidget):
 	
 		painter = QPainter()
 		painter.begin(self)
-		painter.setRenderHint(QPainter.Antialiasing)
+		painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 		
-		painter.fillRect(event.rect(), self.palette().brush(QPalette.Window))
+		painter.fillRect(event.rect(), self.palette().brush(QPalette.ColorRole.Window))
 		self.drawMarkings(painter)
 		self.drawNeedle(painter)
 		
@@ -55,13 +55,13 @@ class CompassWidget(QWidget):
 		i = 0
 		while i < 360:
 			if i == 0:
-				painter.setPen(self.palette().color(QPalette.Highlight))
+				painter.setPen(self.palette().color(QPalette.ColorRole.Highlight))
 				painter.drawLine(0, -40, 0, -50)
-				painter.drawText(int(-metrics.width(self._pointText[i])/2.0), -52, self._pointText[i])
-				painter.setPen(self.palette().color(QPalette.Shadow))
+				painter.drawText(int(-metrics.horizontalAdvance(self._pointText[i])/2.0), -52, self._pointText[i])
+				painter.setPen(self.palette().color(QPalette.ColorRole.Shadow))
 			elif i % 45 == 0:
 				painter.drawLine(0, -40, 0, -50)
-				painter.drawText(int(-metrics.width(self._pointText[i])/2.0), -52,
+				painter.drawText(int(-metrics.horizontalAdvance(self._pointText[i])/2.0), -52,
 								 self._pointText[i])
 			else:
 				painter.drawLine(0, -45, 0, -50)
@@ -80,8 +80,8 @@ class CompassWidget(QWidget):
 					(self.height() - self._margins)/120.0)
 		painter.scale(scale, scale)
 		
-		painter.setPen(QPen(self.palette().color(QPalette.Shadow), 2, Qt.SolidLine))
-		painter.setBrush(self.palette().brush(QPalette.Shadow))
+		painter.setPen(QPen(self.palette().color(QPalette.ColorRole.Shadow), 2, Qt.PenStyle.SolidLine))
+		painter.setBrush(self.palette().brush(QPalette.ColorRole.Shadow))
 		
 		r = 8
 		c = 25
@@ -89,14 +89,14 @@ class CompassWidget(QWidget):
 		painter.drawLine(0, -c2, 0, c2)
 		painter.drawLine(-c2, 0, c2, 0)
 		
-		painter.setPen(QPen(Qt.NoPen))
+		painter.setPen(QPen(Qt.PenStyle.NoPen))
 		#painter.drawEllipse(QPoint(0,c), r, r)
 		#painter.drawEllipse(QPoint(-c,0), r, r)
 		#painter.drawEllipse(QPoint(c,0), r, r)
 		
 
 		
-		painter.setBrush(self.palette().brush(QPalette.Highlight))
+		painter.setBrush(self.palette().brush(QPalette.ColorRole.Highlight))
 		
 		#painter.drawEllipse(QPoint(0,-c), r, r)
 		needle = QPolygon([QPoint(-5, -25), QPoint(0, -40), QPoint(5, -25), QPoint(0, -30), QPoint(-5, -25)])
@@ -111,8 +111,8 @@ class CompassWidget(QWidget):
 					(self.height() - self._margins)/120.0)
 		painter.scale(scale, scale)
 		
-		painter.setPen(QPen(self.palette().color(QPalette.Shadow), 0, Qt.SolidLine))
-		painter.setBrush(self.palette().brush(QPalette.Highlight))
+		painter.setPen(QPen(self.palette().color(QPalette.ColorRole.Shadow), 0, Qt.PenStyle.SolidLine))
+		painter.setBrush(self.palette().brush(QPalette.ColorRole.Highlight))
 		
 
 		

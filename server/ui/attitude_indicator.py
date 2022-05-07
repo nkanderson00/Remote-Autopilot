@@ -33,10 +33,9 @@ __author__ = 'Bitcraze AB'
 __all__ = ['AttitudeIndicator']
 
 import sys
-from PyQt5 import *
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 
 
 class AttitudeIndicator(QWidget):
@@ -54,8 +53,6 @@ class AttitudeIndicator(QWidget):
         self.hoverTargetASL = 0.0
         self.pixmap = None  # Background camera image
         self.needUpdate = True
-        self.killswitch = False  # killswitch active
-        self.recovery = False  # recovery mode active
 
         self.msg = ""
         self.hz = hz
@@ -76,8 +73,8 @@ class AttitudeIndicator(QWidget):
 
         self.msgRemove = 0
 
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Fixed,
-                                       QSizePolicy.MinimumExpanding))
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Fixed,
+                                       QSizePolicy.Policy.MinimumExpanding))
 
     def mouseDoubleClickEvent(self, e):
         self.sigMakeSpace.emit()
@@ -115,7 +112,7 @@ class AttitudeIndicator(QWidget):
         self.needUpdate = True
 
     def setBaro(self, asl):
-        self.hoverASL = asl;
+        self.hoverASL = asl
         self.needUpdate = True
 
     def setRollPitch(self, roll, pitch):
@@ -146,9 +143,9 @@ class AttitudeIndicator(QWidget):
         qp.rotate(self.roll)
         qp.translate(0, (self.pitch * h) / 50)
         qp.translate(-w / 2, -h / 2)
-        qp.setRenderHint(qp.Antialiasing)
+        qp.setRenderHint(qp.RenderHint.Antialiasing)
 
-        font = QFont('Serif', 7, QFont.Light)
+        font = QFont('Serif', 7, QFont.Weight.Light)
         qp.setFont(font)
 
         # Draw the blue
@@ -161,8 +158,7 @@ class AttitudeIndicator(QWidget):
         qp.setBrush(maroon)
         qp.drawRect(-w, h // 2, 3 * w, 3 * h)
 
-        pen = QPen(QColor(255, 255, 255), 1.5,
-                   Qt.SolidLine)
+        pen = QPen(QColor(255, 255, 255), 1.5, Qt.PenStyle.SolidLine)
         qp.setPen(pen)
         qp.drawLine(-w, h // 2, 3 * w, h // 2)
 
@@ -194,8 +190,7 @@ class AttitudeIndicator(QWidget):
 
         qp.setWorldMatrixEnabled(False)
 
-        pen = QPen(QColor(0, 0, 0), 2,
-                   Qt.SolidLine)
+        pen = QPen(QColor(0, 0, 0), 2, Qt.PenStyle.SolidLine)
         qp.setBrush(QColor(0, 0, 0))
         qp.setPen(pen)
         qp.drawLine(0, h // 2, w, h // 2)
@@ -204,12 +199,11 @@ class AttitudeIndicator(QWidget):
 
         qp.setWorldMatrixEnabled(False)
 
-        pen = QPen(QColor(255, 255, 255), 2,
-                   Qt.SolidLine)
+        pen = QPen(QColor(255, 255, 255), 2, Qt.PenStyle.SolidLine)
         qp.setBrush(QColor(255, 255, 255))
         qp.setPen(pen)
         fh = max(7, h // 50)
-        font = QFont('Sans', fh, QFont.Light)
+        font = QFont('Sans', fh, QFont.Weight.Light)
         qp.setFont(font)
         qp.resetTransform()
 
@@ -238,7 +232,7 @@ class AttitudeIndicator(QWidget):
         # FreeFall Detection
         qp.resetTransform()
         qp.translate(0, h / 2)
-        qp.drawText(int(fh * 6), int(fh / 2), str(round(self.ff_acc + 1, 2)) + 'G')  # acc
+        #qp.drawText(int(fh * 6), int(fh / 2), str(round(self.ff_acc + 1, 2)) + 'G')  # acc
 
         pos_y = h / 6 * self.ff_acc
 
@@ -252,32 +246,6 @@ class AttitudeIndicator(QWidget):
         qp.drawLine(int(fh * 4.5), 0, int(fh * 4.5), int(pos_y))  # vertical line
         qp.drawLine(int(fh * 4.7), 0, int(fh * 4.5), 0)  # left horizontal line
         qp.drawLine(int(fh * 4.2), int(pos_y), int(fh * 4.5), int(pos_y))  # right horizontal line
-
-        # Draw killswitch
-
-        qp.resetTransform()
-        if self.killswitch:
-            pen = QPen(QColor(255, 0, 0, 200), 8, Qt.SolidLine)
-            qp.setBrush(QColor(255, 0, 0, 200))
-            qp.setPen(pen)
-            qp.drawLine(w / 8., h / 8., w / 8. * 7., h / 8. * 7.)  # vertical line
-            qp.drawLine(w / 8., h / 8. * 7., w / 8. * 7., h / 8.)  # vertical line
-
-        if self.msg != "":
-            qp.drawText(0, 0, w, h, Qt.AlignBottom | Qt.AlignHCenter, self.msg)
-
-        if self.recovery:
-            pen = QPen(QColor(255, 255, 0, 170), 8, Qt.SolidLine)
-            qp.setBrush(QColor(255, 255, 0, 170))
-            qp.setPen(pen)
-            qp.setFont(QFont('Sans', max(7, h / 11), QFont.DemiBold))
-            qp.drawText(0, 0, w, h, Qt.AlignCenter, 'AUTO')
-
-        r = min(w, h)
-        center = QPoint(w // 2, h // 2)
-        qp.setBrush(QColor(0, 0, 0, 0))
-        pen = QPen(self.palette().brush(QPalette.Window), 2, Qt.SolidLine)
-        qp.setPen(pen)
 
 
 if __name__ == "__main__":
@@ -353,7 +321,7 @@ if __name__ == "__main__":
     def main():
         app = QApplication(sys.argv)
         ex = Example()
-        sys.exit(app.exec_())
+        sys.exit(app.exec())
 
 
     main()

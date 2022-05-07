@@ -1,8 +1,8 @@
 import sys
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
+from PyQt6.QtWidgets import *
 
 import gi
 
@@ -18,7 +18,7 @@ class VideoWidget(QWidget):
 	def __init__(self, flags, *args, **kwargs):
 		QMainWindow.__init__(self)
 		super().__init__(flags, *args, **kwargs)
-		self.setWindowFlag(Qt.WindowCloseButtonHint, False)
+		self.setWindowFlag(Qt.WindowType.WindowCloseButtonHint, False)
 		self.setGeometry(0, 0, 640, 480)
 		self.windowId = self.winId()
 		self.setup_pipeline()
@@ -55,4 +55,4 @@ if __name__ == '__main__':
 	app = QApplication(sys.argv)
 	win = VideoWidget(Qt.WindowFlags())
 	win.show()
-	sys.exit(app.exec_())
+	sys.exit(app.exec())
