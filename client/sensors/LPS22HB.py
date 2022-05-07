@@ -32,7 +32,8 @@ LPS_RES			    = 0x33		#Filter reset register
 
 class LPS22HB(object):
 	
-	def __init__(self,address=LPS22HB_I2C_ADDRESS):
+	def __init__(self, address=LPS22HB_I2C_ADDRESS):
+		super(LPS22HB, self).__init__()
 		self._address = address
 		self._bus = smbus.SMBus(1)
 		self.LPS22HB_RESET()						 #Wait for reset to complete
@@ -67,7 +68,7 @@ class LPS22HB(object):
 		
 		u8_buf = [0,0,0]
 		self.LPS22HB_START_ONESHOT()
-		press_data, temp_data = 0, 0
+		press_data = temp_data = None
 		
 		if (self._read_byte(LPS_STATUS)&0x01) == 0x01:  # a new pressure data is generated
 			u8_buf[0] = self._read_byte(LPS_PRESS_OUT_XL)
@@ -81,6 +82,31 @@ class LPS22HB(object):
 			temp_data = ((u8_buf[1]<<8)+u8_buf[0])/100.0
 			
 		return press_data, temp_data
+
+	def read_pressure_data(self):
+		u8_buf = [0,0,0]
+		self.LPS22HB_START_ONESHOT()
+		press_data = None
+
+		if (self._read_byte(LPS_STATUS)&0x01) == 0x01:  # a new pressure data is generated
+			u8_buf[0] = self._read_byte(LPS_PRESS_OUT_XL)
+			u8_buf[1] = self._read_byte(LPS_PRESS_OUT_L)
+			u8_buf[2] = self._read_byte(LPS_PRESS_OUT_H)
+			press_data = ((u8_buf[2]<<16)+(u8_buf[1]<<8)+u8_buf[0])/4096.0
+
+		return press_data
+
+	def read_temperature_data(self):
+		u8_buf = [0,0]
+		self.LPS22HB_START_ONESHOT()
+		temp_data = None
+
+		if (self._read_byte(LPS_STATUS)&0x02) == 0x02:   # a new temperature data is generated
+			u8_buf[0] = self._read_byte(LPS_TEMP_OUT_L)
+			u8_buf[1] = self._read_byte(LPS_TEMP_OUT_H)
+			temp_data = ((u8_buf[1]<<8)+u8_buf[0])/100.0
+
+		return temp_data
 
 
 if __name__ == '__main__':
